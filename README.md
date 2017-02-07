@@ -1,4 +1,5 @@
-### Simple Command Line Util to compute Jaccard Similarity between two meshes. 
+### Simple command line utility to compute Jaccard Similarity between two meshes.
+Jaccard Similarity is Intersection / Union of two voxel grids.
 
 #### Dependencies
 ```
