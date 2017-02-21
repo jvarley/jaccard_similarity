@@ -6,26 +6,15 @@ import binvox_rw
 import os
 import shutil
 import plyfile
+import tempfile
 
 def jaccard_similarity(mesh_filepath0, mesh_filepath1, grid_size=40, exact=True):
     
-    temp_mesh0_filepath = "/tmp/mesh0.ply"
-    temp_mesh1_filepath = "/tmp/mesh1.ply"
+    t0_handle, temp_mesh0_filepath = tempfile.mkstemp(suffix=".ply")
+    t1_handle, temp_mesh1_filepath = tempfile.mkstemp(suffix=".ply")
     
     binvox0_filepath = temp_mesh0_filepath.replace(".ply", ".binvox")
     binvox1_filepath = temp_mesh1_filepath.replace(".ply", ".binvox")
-    
-    if os.path.exists(temp_mesh0_filepath):
-        os.remove(temp_mesh0_filepath)
-
-    if os.path.exists(temp_mesh1_filepath):
-        os.remove(temp_mesh1_filepath)
-
-    if os.path.exists(binvox0_filepath):
-        os.remove(binvox0_filepath)
-
-    if os.path.exists(binvox1_filepath):
-        os.remove(binvox1_filepath)
     
     shutil.copyfile(mesh_filepath0, temp_mesh0_filepath)
     shutil.copyfile(mesh_filepath1, temp_mesh1_filepath)
@@ -44,7 +33,7 @@ def jaccard_similarity(mesh_filepath0, mesh_filepath1, grid_size=40, exact=True)
     #-d: specify voxel grid size (default 256, max 1024)(no max when using -e)
     #-e: exact voxelization (any voxel with part of a triangle gets set)(does not use graphics card)
     #-bb <minx> <miny> <minz> <maxx> <maxy> <maxz>: force a different input model bounding box
-    cmd_base = "binvox " 
+    cmd_base = "binvox -pb " 
     if exact:
         cmd_base += "-e "
     
@@ -64,10 +53,21 @@ def jaccard_similarity(mesh_filepath0, mesh_filepath1, grid_size=40, exact=True)
 
     union = np.logical_or(mesh0_binvox.data, mesh1_binvox.data)
     union_count  = np.count_nonzero(union)
+    jaccard = float(intersection_count) / float(union_count)
+
+    if os.path.exists(temp_mesh0_filepath):
+        os.remove(temp_mesh0_filepath)
+
+    if os.path.exists(temp_mesh1_filepath):
+        os.remove(temp_mesh1_filepath)
+
+    if os.path.exists(binvox0_filepath):
+        os.remove(binvox0_filepath)
+
+    if os.path.exists(binvox1_filepath):
+        os.remove(binvox1_filepath)
     
-    #print intersection_count 
-    #print union_count
-    return float(intersection_count) / float(union_count)
+    return jaccard
     
 
 if __name__ == "__main__":
