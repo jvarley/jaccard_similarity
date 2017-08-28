@@ -12,7 +12,10 @@ def jaccard_similarity(mesh_filepath0, mesh_filepath1, grid_size=40, exact=True)
     
     t0_handle, temp_mesh0_filepath = tempfile.mkstemp(suffix=".ply")
     t1_handle, temp_mesh1_filepath = tempfile.mkstemp(suffix=".ply")
-    
+
+    os.close(t0_handle)
+    os.close(t1_handle)
+
     binvox0_filepath = temp_mesh0_filepath.replace(".ply", ".binvox")
     binvox1_filepath = temp_mesh1_filepath.replace(".ply", ".binvox")
     
